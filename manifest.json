@@ -1,0 +1,16 @@
+{
+  "name": "pagination",
+  "manifest_version": 3,
+  "version": "0.1",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Generic Data Extraction"
+  },
+  "content_scripts": [
+    {
+      "js": ["GenericExtraction.js", "content.js", "xlsx.full.min.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "permissions": ["tabs", "storage"]
+}

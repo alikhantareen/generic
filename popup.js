@@ -1,0 +1,217 @@
+// popup.js
+if (localStorage.getItem("user") && localStorage.getItem("startClicked")) {
+  showOptionsScreen();
+} else if (localStorage.getItem("user")) {
+  introScreen();
+} else if (localStorage.getItem("startClicked")) {
+  showOptionsScreen();
+} else if (localStorage.getItem("rowdisplay")) {
+  rowScreenDisplay();
+} else {
+  loginScreen();
+}
+
+//constants to be used
+const startbtn = document.getElementById("startButton");
+const allDatabtn = document.getElementById("allData");
+const clearLsbtn = document.getElementById("clrlocal");
+const show_rows_screen = document.getElementById("rowsData");
+const download_rows_data = document.getElementById("rowsScreenbutton");
+const show_date_screen = document.getElementById("dateData");
+const download_date_data = document.getElementById("dateDataDownload");
+const logInScreen = document.getElementsByClassName("formContainer");
+const container = document.getElementById("rowContainer");
+const down = document.getElementById("down");
+const up = document.getElementById("upload");
+
+//hiding the buttons
+allDatabtn.style.display = "none";
+show_date_screen.style.display = "none";
+
+//below are the listeners on different elements
+clearLsbtn.addEventListener("click", () => {
+  messagePassing("clear_reload");
+  localStorage.removeItem("startClicked");
+  localStorage.removeItem("dateSelected");
+  localStorage.removeItem("rowdisplay");
+  introScreen();
+});
+
+startbtn.addEventListener("click", () => {
+  localStorage.setItem("startClicked", true);
+  messagePassing("runScript");
+});
+
+show_rows_screen.addEventListener("click", () => {
+  showRowsScreen();
+});
+
+show_date_screen.addEventListener("click", () => {
+  const value = JSON.parse(localStorage.getItem("dateSelected"));
+  if (value) {
+    showDateScreen();
+  } else {
+    alert("Select the date cell and enter the date in the popup");
+    messagePassing("date_select");
+    localStorage.setItem("dateSelected", true);
+  }
+});
+
+download_rows_data.addEventListener("click", () => {
+  let rows = document.getElementById("rowsNumber").value;
+  messagePassing("rows_data", rows);
+  chrome.storage.sync.get(["scrappedRows"], function (result) {
+    container.appendChild(tableMaker(result.scrappedRows));
+    localStorage.setItem("rowdisplay", true);
+    rowScreenDisplay();
+  });
+});
+
+download_date_data.addEventListener("click", () => {
+  let date = document.getElementById("datepick").value;
+  messagePassing("date_data", date);
+});
+
+allDatabtn.addEventListener("click", () => {
+  messagePassing("downloadAllData");
+});
+
+document.querySelector("#loginform").addEventListener("submit", function (e) {
+  // Prevent the form from submitting
+  e.preventDefault();
+  // login() will be called when the form is submitted
+  document.getElementById("submit").style.background = "#2c963f";
+  document.getElementById("submit").innerText = "Logging you in...";
+  login();
+});
+
+document.getElementById("logoutbutton").addEventListener("click", () => {
+  messagePassing("clear_reload");
+  localStorage.removeItem("startClicked");
+  localStorage.removeItem("dateSelected");
+  localStorage.removeItem("user");
+  error();
+  loginScreen();
+});
+
+document
+  .getElementById("showPasswordFunction")
+  .addEventListener("click", () => {
+    var x = document.getElementById("password");
+    if (x.type === "password") {
+      x.type = "text";
+    } else {
+      x.type = "password";
+    }
+  });
+
+down.addEventListener("click", () => {
+  messagePassing("down");
+});
+
+up.addEventListener("click", () => {
+  messagePassing("up");
+  document.getElementById("upload").style.background = "#2c963f";
+  document.getElementById("upload").innerText = "Uploading...";
+});
+
+//this function will be used to display table
+function tableMaker(rowsData) {
+  let table = document.createElement("table");
+  table.setAttribute("id", "generic_data_extraction");
+  let thead = document.createElement("thead");
+  let tbody = document.createElement("tbody");
+  let theadrow = document.createElement("tr");
+  let theadrowData_1 = document.createElement("td");
+  let theadrowData_2 = document.createElement("td");
+  theadrowData_1.innerHTML = "Item_Id";
+  theadrowData_2.innerHTML = "Supplier Link";
+  theadrow.appendChild(theadrowData_1);
+  theadrow.appendChild(theadrowData_2);
+  thead.appendChild(theadrow);
+
+  // table.appendChild(thead);
+  table.appendChild(thead);
+  table.appendChild(tbody);
+
+  for (let i = 0; i < rowsData.length; i++) {
+    let row = document.createElement("tr");
+    let rowData_1 = document.createElement("td");
+    rowData_1.innerHTML = rowsData[i][0];
+    let rowData_2 = document.createElement("td");
+    rowData_2.innerHTML = rowsData[i][1];
+    row.appendChild(rowData_1);
+    row.appendChild(rowData_2);
+    tbody.appendChild(row);
+  }
+  return table;
+}
+
+//error display function
+function error() {
+  document.getElementById("submit").style.background = "#1b5c27";
+  document.getElementById("submit").innerText = "Log in";
+}
+
+//this function is used to pass the message from html script to content script
+function messagePassing(msg, data = 0) {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.sendMessage(tabs[0].id, { type: msg, data: data });
+  });
+}
+
+//below are the functions used to display the screens on different conditions
+//below are the functions used to display the screens on different conditions
+function loginScreen() {
+  document.getElementById("formContainer").style.display = "flex";
+  document.getElementById("mainScreen").style.display = "none";
+  document.getElementById("optionsScreen").style.display = "none";
+  document.getElementById("rowsScreen").style.display = "none";
+  document.getElementById("dateScreen").style.display = "none";
+  document.getElementById("displayrow").style.display = "none";
+}
+
+function introScreen() {
+  document.getElementById("formContainer").style.display = "none";
+  document.getElementById("mainScreen").style.display = "flex";
+  document.getElementById("optionsScreen").style.display = "none";
+  document.getElementById("rowsScreen").style.display = "none";
+  document.getElementById("dateScreen").style.display = "none";
+  document.getElementById("displayrow").style.display = "none";
+}
+
+function showOptionsScreen() {
+  document.getElementById("formContainer").style.display = "none";
+  document.getElementById("mainScreen").style.display = "none";
+  document.getElementById("optionsScreen").style.display = "flex";
+  document.getElementById("rowsScreen").style.display = "none";
+  document.getElementById("dateScreen").style.display = "none";
+  document.getElementById("displayrow").style.display = "none";
+}
+
+function showRowsScreen() {
+  document.getElementById("formContainer").style.display = "none";
+  document.getElementById("mainScreen").style.display = "none";
+  document.getElementById("optionsScreen").style.display = "none";
+  document.getElementById("rowsScreen").style.display = "flex";
+  document.getElementById("dateScreen").style.display = "none";
+  document.getElementById("displayrow").style.display = "none";
+}
+
+function showDateScreen() {
+  document.getElementById("formContainer").style.display = "none";
+  document.getElementById("mainScreen").style.display = "none";
+  document.getElementById("optionsScreen").style.display = "none";
+  document.getElementById("rowsScreen").style.display = "none";
+  document.getElementById("dateScreen").style.display = "flex";
+  document.getElementById("displayrow").style.display = "none";
+}
+
+function rowScreenDisplay() {
+  document.getElementById("formContainer").style.display = "none";
+  document.getElementById("mainScreen").style.display = "none";
+  document.getElementById("optionsScreen").style.display = "none";
+  document.getElementById("rowsScreen").style.display = "none";
+  document.getElementById("dateScreen").style.display = "none";
+  document.getElementById("displayrow").style.display = "flex";
+}

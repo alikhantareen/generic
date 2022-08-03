@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generic Data Extraction</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="main">
+        <div id="formContainer">
+            <div class="loginform">
+                <div class="logo">
+                    <img src="logo.png" alt="SpotnPaste" />
+                </div>
+                <p id="error"></p>
+                <div class="login">
+                    <form id="loginform" action="" method="">
+                        <input id="username" name="user" type="email" placeholder="username" required />
+                        <input id="password" name="password" type="password" placeholder="password" required />
+                        <input type="checkbox" id="showPasswordFunction" />Show Password
+                        <button type="submit" id="submit">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="mainScreen">
+            <p class="intro">
+                Welcome! The Generic data extraction extension is used for extracting the user selected columns* data from the table on any webpage. Click the button below to get started. <br /><br />
+                <span class="warn">(*For now extension only supports two columns)</span
+          >
+        </p>
+        <button id="startButton" class="btn">Start</button>
+      </div>
+      <div id="optionsScreen">
+        <div class="logout">
+          <button id="logoutbutton">Logout</button>
+        </div>
+        <p class="intro">Please select the options</p>
+        <button id="dateData" class="btn">Data by Date</button>
+        <button id="rowsData" class="btn">Data by Rows</button>
+        <button id="allData" class="btn">All Data</button>
+        <button id="clrlocal" class="btn">Clear selections</button>
+      </div>
+      <div id="rowsScreen">
+        <h3>Enter Number of rows</h3>
+        <input id="rowsNumber" type="number" />
+        <button id="rowsScreenbutton" type="button" name="button" class="btn">
+          Proceed
+        </button>
+      </div>
+      <div id="dateScreen">
+        <h3>Enter Date(YYYY/MM/DD)</h3>
+        <input type="text" id="datepick" type="number" />
+        <button id="dateDataDownload" type="button" name="button" class="btn">
+          Download
+        </button>
+      </div>
+      <div id="displayrow">
+        <div id="rowContainer">
+          <h3 style="text-align: center">Your scrapped table</h3>
+        </div>
+        <button id="down" type="button" name="button" class="btn">
+          Download
+        </button>
+        <button id="upload" type="button" name="button" class="btn">
+          Upload
+        </button>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+    <script src="apicalls.js"></script>
+  </body>
+</html>
