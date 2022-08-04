@@ -23,13 +23,47 @@
 }
 
 .btn {
-    width: 50%;
+    width: 125px;
     height: 40px;
     background-color: #1b5c27;
     color: #fff;
     border: none;
     padding: 10px;
     cursor: pointer;
+}
+
+#backbtn {
+    width: 100px;
+    height: 40px;
+    background-color: #1b5c27;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.deleteRowbtn {
+    width: 100px;
+    height: 40px;
+    background-color: #1b5c27;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.tablerow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+#backbtnScreen {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: flex-end;
 }
 
 #optionsScreen {

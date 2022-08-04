@@ -1,12 +1,24 @@
-// popup.js
-if (localStorage.getItem("user") && localStorage.getItem("startClicked")) {
+//Conditions on which different screens will be displayed
+if (
+  localStorage.getItem("user") &&
+  localStorage.getItem("startClicked") &&
+  localStorage.getItem("proceed")
+) {
+  chrome.storage.sync.get(["scrappedRows"], function (result) {
+    let table = tableMaker(result.scrappedRows);
+    container.appendChild(table);
+    localStorage.setItem("rowdisplay", true);
+    rowScreenDisplay();
+  });
+} else if (
+  localStorage.getItem("user") &&
+  localStorage.getItem("startClicked")
+) {
   showOptionsScreen();
 } else if (localStorage.getItem("user")) {
   introScreen();
 } else if (localStorage.getItem("startClicked")) {
   showOptionsScreen();
-} else if (localStorage.getItem("rowdisplay")) {
-  rowScreenDisplay();
 } else {
   loginScreen();
 }
@@ -16,19 +28,25 @@ const startbtn = document.getElementById("startButton");
 const allDatabtn = document.getElementById("allData");
 const clearLsbtn = document.getElementById("clrlocal");
 const show_rows_screen = document.getElementById("rowsData");
-const download_rows_data = document.getElementById("rowsScreenbutton");
+const proceedBtn = document.getElementById("rowsScreenbutton");
 const show_date_screen = document.getElementById("dateData");
 const download_date_data = document.getElementById("dateDataDownload");
 const logInScreen = document.getElementsByClassName("formContainer");
 const container = document.getElementById("rowContainer");
 const down = document.getElementById("down");
 const up = document.getElementById("upload");
+const back = document.getElementById("backbtn");
 
 //hiding the buttons
 allDatabtn.style.display = "none";
 show_date_screen.style.display = "none";
 
 //below are the listeners on different elements
+back.addEventListener("click", () => {
+  localStorage.removeItem("proceed");
+  showOptionsScreen();
+});
+
 clearLsbtn.addEventListener("click", () => {
   messagePassing("clear_reload");
   localStorage.removeItem("startClicked");
@@ -57,11 +75,13 @@ show_date_screen.addEventListener("click", () => {
   }
 });
 
-download_rows_data.addEventListener("click", () => {
+proceedBtn.addEventListener("click", () => {
+  localStorage.setItem("proceed", true);
   let rows = document.getElementById("rowsNumber").value;
   messagePassing("rows_data", rows);
   chrome.storage.sync.get(["scrappedRows"], function (result) {
-    container.appendChild(tableMaker(result.scrappedRows));
+    let table = tableMaker(result.scrappedRows);
+    container.appendChild(table);
     localStorage.setItem("rowdisplay", true);
     rowScreenDisplay();
   });
@@ -140,8 +160,17 @@ function tableMaker(rowsData) {
     rowData_1.innerHTML = rowsData[i][0];
     let rowData_2 = document.createElement("td");
     rowData_2.innerHTML = rowsData[i][1];
+    let btn = document.createElement("button");
+    btn.setAttribute("class", "deleteRowbtn");
+    btn.innerText = "remove row";
+    //this listener will be used to remove the row from the html table
+    btn.addEventListener("click", (e) => {
+      let tr = e.target.parentNode;
+      tr.parentNode.removeChild(tr);
+    });
     row.appendChild(rowData_1);
     row.appendChild(rowData_2);
+    row.appendChild(btn);
     tbody.appendChild(row);
   }
   return table;
@@ -160,7 +189,6 @@ function messagePassing(msg, data = 0) {
   });
 }
 
-//below are the functions used to display the screens on different conditions
 //below are the functions used to display the screens on different conditions
 function loginScreen() {
   document.getElementById("formContainer").style.display = "flex";

@@ -28,158 +28,166 @@ class GenericExtraction {
   }
 
   async userSelection() {
-    const exist = await this.waitForElm("table");
-    let vars = this.table_manipulate("table");
-    let table = vars.table;
-    let classNameToCapture = "";
-    let tableHeadings = document.querySelectorAll("table thead tr th");
-    let tableCellsInnerText = [];
-    let running_alert = true;
+    try {
+      const exist = await this.waitForElm("table");
+      let vars = this.table_manipulate("table");
+      let table = vars.table;
+      let classNameToCapture = "";
+      let tableHeadings = document.querySelectorAll("table thead tr th");
+      let tableCellsInnerText = [];
+      let running_alert = true;
 
-    // this loop is extracting the innerText from the table headings
-    for (let i = 0; i < tableHeadings.length; i++) {
-      this.obj.tableHeadingsInnerTextArray.push(tableHeadings[i].innerText);
-    }
-
-    //this block of code is for extracting the cells inner text
-    for (let i = 0; i < vars.tableCellsLength.length; i++) {
-      tableCellsInnerText.push(vars.tableCellsLength[i].innerText);
-    }
-
-    if (!localStorage.getItem("cellsInnerText")) {
-      localStorage.setItem(
-        "cellsInnerText",
-        JSON.stringify(tableCellsInnerText)
-      );
-    } else {
-    }
-    if (document.querySelector("table")) {
-      if (localStorage.getItem("cells_selected")) {
-        running_alert = false;
-        alert(
-          "Selection process has been done. Please choose the options from the popup OR clear selections to start from scratch"
-        );
-        this.obj.paginationButtons = document.querySelectorAll(
-          "." + localStorage.getItem("nextButtonClassName")
-        );
-        table.rows[1].style.backgroundColor = "white";
-        table.rows[1].cells[
-          localStorage.getItem(this.CELL_ONE_KEY)
-        ].style.backgroundColor = "green";
-        table.rows[1].cells[
-          localStorage.getItem(this.CELL_TWO_KEY)
-        ].style.backgroundColor = "green";
-        table.rows[1].cells[
-          localStorage.getItem(this.CELL_ONE_KEY)
-        ].style.color = "white";
-        table.rows[1].cells[
-          localStorage.getItem(this.CELL_TWO_KEY)
-        ].style.color = "white";
+      // this loop is extracting the innerText from the table headings
+      for (let i = 0; i < tableHeadings.length; i++) {
+        this.obj.tableHeadingsInnerTextArray.push(tableHeadings[i].innerText);
       }
-      if (running_alert) {
-        alert(
-          "The extension is running now, select any two cells from the highlighted table & click on the first button of pagination"
-        );
+
+      //this block of code is for extracting the cells inner text
+      for (let i = 0; i < vars.tableCellsLength.length; i++) {
+        tableCellsInnerText.push(vars.tableCellsLength[i].innerText);
       }
-      table.rows[1].addEventListener("click", (e) => {
-        if (this.obj.user_selections.length === 2) {
-          table.rows[1].style.backgroundColor = "white";
-        }
+
+      if (!localStorage.getItem("cellsInnerText")) {
+        localStorage.setItem(
+          "cellsInnerText",
+          JSON.stringify(tableCellsInnerText)
+        );
+      } else {
+      }
+      if (document.querySelector("table")) {
         if (localStorage.getItem("cells_selected")) {
-        } else {
-          if (this.obj.user_selections.length < 3) {
-            e.target.style.backgroundColor = "green";
-            e.target.style.color = "white";
-          }
-          this.obj.user_selections.push(e.target);
+          running_alert = false;
+          alert(
+            "Selection process has been done. Please choose the options from the popup OR clear selections to start from scratch"
+          );
+          this.obj.paginationButtons = document.querySelectorAll(
+            "." + localStorage.getItem("nextButtonClassName")
+          );
+          table.rows[1].style.backgroundColor = "white";
+          table.rows[1].cells[
+            localStorage.getItem(this.CELL_ONE_KEY)
+          ].style.backgroundColor = "green";
+          table.rows[1].cells[
+            localStorage.getItem(this.CELL_TWO_KEY)
+          ].style.backgroundColor = "green";
+          table.rows[1].cells[
+            localStorage.getItem(this.CELL_ONE_KEY)
+          ].style.color = "white";
+          table.rows[1].cells[
+            localStorage.getItem(this.CELL_TWO_KEY)
+          ].style.color = "white";
         }
-        if (this.obj.user_selections.length === 2) {
-          alert("Please select the pagination buttons element from the page!");
-          let parentDiv = table.parentNode.parentNode.parentNode;
-          setTimeout(() => {
-            parentDiv.addEventListener("click", (e) => {
-              if (e.target.tagName === "A") {
-                if (
-                  e.target.innerText >= parseInt("1") ||
-                  e.target.innerText <= parseInt("1000000") ||
-                  e.target.innerText === "Next" ||
-                  e.target.innerText === "Previous" ||
-                  e.target.innerText === ">" ||
-                  e.target.innerText === "<" ||
-                  e.target.innerText === "First" ||
-                  e.target.innerText === "Last" ||
-                  e.target.innerText === "←" ||
-                  e.target.innerText === "→"
-                ) {
-                  this.obj.user_selections.push(e.target);
-                  if (this.obj.user_selections.length === 3) {
-                    localStorage.setItem("cells_selected", true);
-                    if (
-                      window.location.href ===
-                      "https://platform.autods.com/orders"
-                    ) {
-                      let class_name = this.strTrimmer(
-                        this.obj.user_selections[
-                          this.obj.user_selections.length - 1
-                        ].parentNode.className
-                      );
-                      let t = document.querySelectorAll("." + class_name);
-                      for (let i = 0; i < t[t.length - 1].innerText; i++) {
-                        this.obj.paginationButtonsLength.push(i);
-                      }
-                      classNameToCapture = document.querySelector(
-                        "." + class_name
-                      ).parentNode.className;
-                      let c =
-                        document.querySelector(".ant-pagination").childNodes;
-                      this.obj.autoDsNextButton = c[c.length - 1];
-                      this.obj.flag = true;
-                    } else {
+        if (running_alert) {
+          alert(
+            "The extension is running now, select any two cells from the highlighted table & click on the first button of pagination"
+          );
+        }
+        table.rows[1].addEventListener("click", (e) => {
+          if (this.obj.user_selections.length === 2) {
+            table.rows[1].style.backgroundColor = "white";
+          }
+          if (localStorage.getItem("cells_selected")) {
+          } else {
+            if (this.obj.user_selections.length < 3) {
+              e.target.style.backgroundColor = "green";
+              e.target.style.color = "white";
+            }
+            this.obj.user_selections.push(e.target);
+          }
+          if (this.obj.user_selections.length === 2) {
+            alert(
+              "Please select the pagination buttons element from the page!"
+            );
+            let parentDiv = table.parentNode.parentNode.parentNode;
+            setTimeout(() => {
+              parentDiv.addEventListener("click", (e) => {
+                if (e.target.tagName === "A") {
+                  if (
+                    e.target.innerText >= parseInt("1") ||
+                    e.target.innerText <= parseInt("1000000") ||
+                    e.target.innerText === "Next" ||
+                    e.target.innerText === "Previous" ||
+                    e.target.innerText === ">" ||
+                    e.target.innerText === "<" ||
+                    e.target.innerText === "First" ||
+                    e.target.innerText === "Last" ||
+                    e.target.innerText === "←" ||
+                    e.target.innerText === "→"
+                  ) {
+                    this.obj.user_selections.push(e.target);
+                    if (this.obj.user_selections.length === 3) {
+                      localStorage.setItem("cells_selected", true);
                       if (
-                        localStorage.getItem("nextButtonClassName") === null
+                        window.location.href ===
+                        "https://platform.autods.com/orders"
                       ) {
-                        if (
-                          !this.obj.user_selections[
+                        let class_name = this.strTrimmer(
+                          this.obj.user_selections[
                             this.obj.user_selections.length - 1
-                          ].className
+                          ].parentNode.className
+                        );
+                        let t = document.querySelectorAll("." + class_name);
+                        for (let i = 0; i < t[t.length - 1].innerText; i++) {
+                          this.obj.paginationButtonsLength.push(i);
+                        }
+                        classNameToCapture = document.querySelector(
+                          "." + class_name
+                        ).parentNode.className;
+                        let c =
+                          document.querySelector(".ant-pagination").childNodes;
+                        this.obj.autoDsNextButton = c[c.length - 1];
+                        this.obj.flag = true;
+                      } else {
+                        if (
+                          localStorage.getItem("nextButtonClassName") === null
                         ) {
-                          classNameToCapture = this.strTrimmer(
-                            this.obj.user_selections[
-                              this.obj.user_selections.length - 1
-                            ].parentNode.className
-                          );
-                        } else {
-                          classNameToCapture = this.strTrimmer(
-                            this.obj.user_selections[
+                          if (
+                            !this.obj.user_selections[
                               this.obj.user_selections.length - 1
                             ].className
+                          ) {
+                            classNameToCapture = this.strTrimmer(
+                              this.obj.user_selections[
+                                this.obj.user_selections.length - 1
+                              ].parentNode.className
+                            );
+                          } else {
+                            classNameToCapture = this.strTrimmer(
+                              this.obj.user_selections[
+                                this.obj.user_selections.length - 1
+                              ].className
+                            );
+                          }
+                          localStorage.setItem(
+                            "nextButtonClassName",
+                            classNameToCapture
                           );
+                          this.obj.paginationButtons =
+                            document.querySelectorAll(
+                              "." + localStorage.getItem("nextButtonClassName")
+                            );
+                        } else {
+                          this.obj.paginationButtons =
+                            document.querySelectorAll(
+                              "." + localStorage.getItem("nextButtonClassName")
+                            );
                         }
-                        localStorage.setItem(
-                          "nextButtonClassName",
-                          classNameToCapture
-                        );
-                        this.obj.paginationButtons = document.querySelectorAll(
-                          "." + localStorage.getItem("nextButtonClassName")
-                        );
-                      } else {
-                        this.obj.paginationButtons = document.querySelectorAll(
-                          "." + localStorage.getItem("nextButtonClassName")
-                        );
                       }
+                      this.alertUser();
                     }
-                    this.alertUser();
+                  } else {
+                    alert("Please select the proper pagination element");
                   }
-                } else {
-                  alert("Please select the proper pagination element");
                 }
-              }
-            });
-          }, 1000);
-        }
-      });
-    } else {
-      alert("Table not found");
+              });
+            }, 1000);
+          }
+        });
+      } else {
+        alert("Table not found");
+      }
+    } catch (error) {
+      alert("Error :" + error);
     }
   }
 
@@ -532,56 +540,70 @@ class GenericExtraction {
     return rows;
   }
   async fetchRowsData(number_of_rows) {
-    let len = this.getting_buttons_length(this.obj.paginationButtons);
-    let rows = [];
-    let NextButton = "";
-    // let checker = false;
-    for (let i = 0; i < len.length; i++) {
-      const ex = await this.waitForElm("table");
-      let table_manipulate_obj = this.table_manipulate("table");
-      let table = table_manipulate_obj.table;
-      if (rows.length === parseInt(number_of_rows)) {
-        break;
-      } else {
-        let x = this.getSpecificRowsTable(table, number_of_rows - rows.length);
-        rows = [...rows, ...x];
-      }
-      if (this.obj.flag) {
-        NextButton = this.obj.autoDsNextButton;
-      } else {
-        this.obj.paginationButtons = document.querySelectorAll(
-          "." + localStorage.getItem("nextButtonClassName")
-        );
-        if (this.NextButtonCapture(this.obj.paginationButtons)) {
-          NextButton = this.NextButtonCapture(this.obj.paginationButtons);
+    try {
+      let len = this.getting_buttons_length(this.obj.paginationButtons);
+      let rows = [];
+      let NextButton = "";
+      for (let i = 0; i < len.length; i++) {
+        const ex = await this.waitForElm("table");
+        let table_manipulate_obj = this.table_manipulate("table");
+        let table = table_manipulate_obj.table;
+        if (rows.length === parseInt(number_of_rows)) {
+          break;
         } else {
-          NextButton =
-            this.obj.paginationButtons[this.obj.paginationButtons.length - 1];
+          let x = this.getSpecificRowsTable(
+            table,
+            number_of_rows - rows.length
+          );
+          rows = [...rows, ...x];
+        }
+        if (this.obj.flag) {
+          NextButton = this.obj.autoDsNextButton;
+        } else {
+          this.obj.paginationButtons = document.querySelectorAll(
+            "." + localStorage.getItem("nextButtonClassName")
+          );
+          if (this.NextButtonCapture(this.obj.paginationButtons)) {
+            NextButton = this.NextButtonCapture(this.obj.paginationButtons);
+          } else {
+            NextButton =
+              this.obj.paginationButtons[this.obj.paginationButtons.length - 1];
+          }
+        }
+        if (
+          NextButton.classList[NextButton.classList.length - 1] === "disabled"
+        ) {
+          break;
+        } else {
+          NextButton.click();
         }
       }
-      if (
-        NextButton.classList[NextButton.classList.length - 1] === "disabled"
-      ) {
-        break;
-      } else {
-        NextButton.click();
-      }
+      chrome.storage.sync.set({ scrappedRows: rows }, function () {
+        localStorage.setItem("scrapRows", JSON.stringify(rows));
+      });
+    } catch (error) {
+      alert("Error :" + error);
     }
-    chrome.storage.sync.set({ scrappedRows: rows }, function () {
-      localStorage.setItem("scrapRows", JSON.stringify(rows));
-    });
   }
 
   down() {
-    let globalTable = this.makingOfTable(
-      JSON.parse(localStorage.getItem("scrapRows")),
-      this.obj.user_selections
-    );
-    this.html_table_to_excel(globalTable, "xlsx");
+    try {
+      let globalTable = this.makingOfTable(
+        JSON.parse(localStorage.getItem("scrapRows")),
+        this.obj.user_selections
+      );
+      this.html_table_to_excel(globalTable, "xlsx");
+    } catch (error) {
+      alert("Error :" + error)
+    }
   }
 
   up() {
-    this.postData(JSON.parse(localStorage.getItem("scrapRows")));
+    try {
+      this.postData(JSON.parse(localStorage.getItem("scrapRows")));
+    } catch (error) {
+      alert("Error : " + error)
+    }
   }
 
   getSpecificRowsTable(table, u) {
