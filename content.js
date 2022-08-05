@@ -55,10 +55,7 @@ chrome.runtime.onMessage.addListener(function(request) {
     if (request.type === "date_select") {
         script_object.dateIndexReturn();
     }
-    if (request.type === "down") {
-        script_object.down();
-    }
-    if (request.type === "up") {
-        script_object.up();
+    if(request.type === "uploaded") {
+        script_object.uploaded();
     }
 });

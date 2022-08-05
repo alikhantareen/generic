@@ -42,3 +42,88 @@ function login() {
       console.log(error);
     });
 }
+
+//this api will use for uploading and authenticating the user
+function postData(rowsToUpload) {
+  let arrayOfObjects = arr2obj(rowsToUpload);
+  let token = "";
+  let obj = {};
+  chrome.storage.sync.get(["token"], function (result) {
+    token = result.token;
+  });
+  chrome.storage.sync.get(["user_id"], function (result) {
+    obj = {
+      createdDate: new Date().getTime(),
+      FileId: 0,
+      user_id: result.user_id,
+    };
+    fetch("https://spotncenter.net/api/Files", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify(obj),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.results.user_id) {
+          let obj = {
+            status: "new",
+            fileId: data.results.fileId,
+            list: arrayOfObjects,
+          };
+          fetch("https://spotncenter.net/api/Csv", {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify(obj),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (!data) {
+                alert("Please wait...");
+              } else {
+                messagePassing("uploaded")
+              }
+            })
+            .catch((err) => {
+              console.warn(err);
+            });
+        } else {
+          console.warn("no response");
+        }
+      })
+      .catch((err) => {
+        console.warn(err);
+      });
+  });
+}
+
+//this function will be used to make objects from the array
+function arr2obj(arr) {
+  let arrofobj = [];
+  arr.forEach((v) => {
+    // Create an empty object
+    let obj = {};
+    // Extract the key and the value
+    let itemID = v[0];
+    let link = v[1];
+
+    // Add the key and value to
+    // the object
+    obj["item_id"] = itemID;
+    obj["marketplace"] = null;
+    obj["supplier_link"] = link;
+    obj["supplier_item_name"] = null;
+    obj["link_fetched_name"] = null;
+    obj["link_fetched_description"] = null;
+    obj["link_fetched_price"] = null;
+    //push the object into the array
+    arrofobj.push(obj);
+  });
+  // Return the array of object
+  return arrofobj;
+}

@@ -27,6 +27,10 @@ class GenericExtraction {
     }
   }
 
+  uploaded() {
+    alert("Data has been uploaded.");
+  }
+
   async userSelection() {
     try {
       const exist = await this.waitForElm("table");
@@ -231,16 +235,6 @@ class GenericExtraction {
       }
     }
     return newStr.join("");
-  }
-
-  html_table_to_excel(table, type = "xlsx") {
-    var data = table;
-
-    var file = XLSX.utils.table_to_book(data, { sheet: "sheet1" });
-
-    XLSX.write(file, { bookType: type, bookSST: true, type: "base64" });
-
-    XLSX.writeFile(file, "orders_excel." + type);
   }
 
   table_manipulate(selector) {
@@ -583,26 +577,6 @@ class GenericExtraction {
       });
     } catch (error) {
       alert("Error :" + error);
-    }
-  }
-
-  down() {
-    try {
-      let globalTable = this.makingOfTable(
-        JSON.parse(localStorage.getItem("scrapRows")),
-        this.obj.user_selections
-      );
-      this.html_table_to_excel(globalTable, "xlsx");
-    } catch (error) {
-      alert("Error :" + error)
-    }
-  }
-
-  up() {
-    try {
-      this.postData(JSON.parse(localStorage.getItem("scrapRows")));
-    } catch (error) {
-      alert("Error : " + error)
     }
   }
 

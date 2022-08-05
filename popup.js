@@ -126,13 +126,24 @@ document
   });
 
 down.addEventListener("click", () => {
-  messagePassing("down");
+  try {
+    let table = document.getElementById("generic_data_extraction");
+    html_table_to_excel(table, "xlsx");
+  } catch (error) {
+    alert("Error : " + error);
+  }
 });
 
 up.addEventListener("click", () => {
-  messagePassing("up");
-  document.getElementById("upload").style.background = "#2c963f";
-  document.getElementById("upload").innerText = "Uploading...";
+  try {
+    let table = document.getElementById("generic_data_extraction");
+    let rows = getRowsTable(table);
+    document.getElementById("upload").style.background = "#2c963f";
+    document.getElementById("upload").innerText = "Uploading...";
+    postData(rows);
+  } catch (error) {
+    alert("Error : " + error);
+  }
 });
 
 //this function will be used to display table
@@ -174,6 +185,33 @@ function tableMaker(rowsData) {
     tbody.appendChild(row);
   }
   return table;
+}
+
+//this function will be used to download xlsx file
+function html_table_to_excel(table, type = "xlsx") {
+  var data = table;
+
+  var file = XLSX.utils.table_to_book(data, { sheet: "sheet1" });
+
+  XLSX.write(file, { bookType: type, bookSST: true, type: "base64" });
+
+  XLSX.writeFile(file, "orders_excel." + type);
+}
+
+function getRowsTable(table) {
+  /* Declaring array variable */
+  let rows = [];
+
+  //iterate through rows of table
+  for (let i = 1; i < table.rows.length; i++) {
+    let column1 = "";
+    let column2 = "";
+    column1 = table.rows[i].cells[0].innerText;
+    column2 = table.rows[i].cells[1].innerText;
+    /* add a new records in the array */
+    rows.push([column1.split("\n\n").join(""), column2.split("\n\n").join("")]);
+  }
+  return rows;
 }
 
 //error display function
