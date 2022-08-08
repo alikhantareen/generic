@@ -30,6 +30,7 @@
     border: none;
     padding: 10px;
     cursor: pointer;
+    border-radius: 5px;
 }
 
 #backbtn {
@@ -40,6 +41,7 @@
     border: none;
     padding: 10px;
     cursor: pointer;
+    border-radius: 5px;
 }
 
 .deleteRowbtn {
@@ -50,6 +52,7 @@
     border: none;
     padding: 10px;
     cursor: pointer;
+    border-radius: 5px;
 }
 
 .tablerow {
@@ -64,6 +67,7 @@
     height: auto;
     display: flex;
     justify-content: flex-end;
+    border-radius: 5px;
 }
 
 #optionsScreen {
@@ -183,6 +187,11 @@ input[type="text"] {
     color: #fa0000;
     font-weight: bolder;
     display: none;
+}
+
+#errorInput {
+    color: #fa0000;
+    font-weight: bolder;
 }
 
 #generic_data_extraction {

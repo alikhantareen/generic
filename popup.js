@@ -4,12 +4,17 @@ if (
   localStorage.getItem("startClicked") &&
   localStorage.getItem("proceed")
 ) {
-  chrome.storage.sync.get(["scrappedRows"], function (result) {
-    let table = tableMaker(result.scrappedRows);
-    container.appendChild(table);
-    localStorage.setItem("rowdisplay", true);
-    rowScreenDisplay();
-  });
+  try {
+    console.log("logging from the if statement");
+    chrome.storage.sync.get(["scrappedRows"], function (result) {
+      let table = tableMaker(result.scrappedRows);
+      container.appendChild(table);
+      localStorage.setItem("rowdisplay", true);
+      rowScreenDisplay();
+    });
+  } catch (error) {
+    alert(error);
+  }
 } else if (
   localStorage.getItem("user") &&
   localStorage.getItem("startClicked")
@@ -36,6 +41,8 @@ const container = document.getElementById("rowContainer");
 const down = document.getElementById("down");
 const up = document.getElementById("upload");
 const back = document.getElementById("backbtn");
+const totalRows = document.getElementById("totalRows");
+const errorInput = document.getElementById('errorInput');
 
 //hiding the buttons
 allDatabtn.style.display = "none";
@@ -43,6 +50,7 @@ show_date_screen.style.display = "none";
 
 //below are the listeners on different elements
 back.addEventListener("click", () => {
+  container.removeChild(container.childNodes[container.childNodes.length - 1]);
   localStorage.removeItem("proceed");
   showOptionsScreen();
 });
@@ -76,15 +84,20 @@ show_date_screen.addEventListener("click", () => {
 });
 
 proceedBtn.addEventListener("click", () => {
-  localStorage.setItem("proceed", true);
   let rows = document.getElementById("rowsNumber").value;
-  messagePassing("rows_data", rows);
-  chrome.storage.sync.get(["scrappedRows"], function (result) {
-    let table = tableMaker(result.scrappedRows);
-    container.appendChild(table);
-    localStorage.setItem("rowdisplay", true);
-    rowScreenDisplay();
-  });
+  if (rows === " " || rows < 0 || rows === "") {
+    errorInput.innerText = "Invalid input!";
+  } else {
+    localStorage.setItem("proceed", true);
+    messagePassing("rows_data", rows);
+    chrome.storage.sync.get(["scrappedRows"], function (result) {
+      let table = tableMaker(result.scrappedRows);
+      container.appendChild(table);
+      totalRows.innerText = `Total rows : ${table.rows.length}`;
+      localStorage.setItem("rowdisplay", true);
+      rowScreenDisplay();
+    });
+  }
 });
 
 download_date_data.addEventListener("click", () => {
@@ -128,9 +141,13 @@ document
 down.addEventListener("click", () => {
   try {
     let table = document.getElementById("generic_data_extraction");
-    html_table_to_excel(table, "xlsx");
+    let rows = getRowsTable(table);
+    let newTable = tableMaker(rows);
+    document.getElementById("down").style.background = "#2c963f";
+    document.getElementById("down").innerText = "Downloading...";
+    html_table_to_excel(newTable, "xlsx");
   } catch (error) {
-    alert("Error : " + error);
+    alert(error);
   }
 });
 
@@ -142,7 +159,7 @@ up.addEventListener("click", () => {
     document.getElementById("upload").innerText = "Uploading...";
     postData(rows);
   } catch (error) {
-    alert("Error : " + error);
+    alert(error);
   }
 });
 

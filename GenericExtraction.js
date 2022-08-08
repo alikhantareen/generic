@@ -191,7 +191,7 @@ class GenericExtraction {
         alert("Table not found");
       }
     } catch (error) {
-      alert("Error :" + error);
+      alert(error);
     }
   }
 
@@ -490,10 +490,10 @@ class GenericExtraction {
         }
       }
       chrome.storage.sync.set({ scrappedRows: rows }, function () {
-        localStorage.setItem("scrapRows", JSON.stringify(rows));
+        console.log("anything");
       });
     } catch (error) {
-      alert("Error :" + error);
+      alert(error);
     }
   }
 
