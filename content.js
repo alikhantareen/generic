@@ -31,7 +31,7 @@ if (localStorage.getItem("cells_selected")) {
 }
 
 //this block of code is for listening the message
-chrome.runtime.onMessage.addListener(function(request) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.type === "runScript") {
         script_object.userSelection();
     }

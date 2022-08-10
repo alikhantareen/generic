@@ -5,13 +5,13 @@ if (
   localStorage.getItem("proceed")
 ) {
   try {
-    console.log("logging from the if statement");
-    chrome.storage.sync.get(["scrappedRows"], function (result) {
-      let table = tableMaker(result.scrappedRows);
-      container.appendChild(table);
-      localStorage.setItem("rowdisplay", true);
-      rowScreenDisplay();
-    });
+    let table = tableMaker(JSON.parse(localStorage.getItem("rowsRec")));
+    document.getElementById("rowContainer").appendChild(table);
+    document.getElementById("totalRows").innerText = `Total rows : ${
+      table.rows.length - 1
+    }`;
+    localStorage.setItem("rowdisplay", true);
+    rowScreenDisplay();
   } catch (error) {
     alert(error);
   }
@@ -42,7 +42,7 @@ const down = document.getElementById("down");
 const up = document.getElementById("upload");
 const back = document.getElementById("backbtn");
 const totalRows = document.getElementById("totalRows");
-const errorInput = document.getElementById('errorInput');
+const errorInput = document.getElementById("errorInput");
 
 //hiding the buttons
 allDatabtn.style.display = "none";
@@ -52,6 +52,7 @@ show_date_screen.style.display = "none";
 back.addEventListener("click", () => {
   container.removeChild(container.childNodes[container.childNodes.length - 1]);
   localStorage.removeItem("proceed");
+  localStorage.removeItem("rowsRec");
   showOptionsScreen();
 });
 
@@ -83,6 +84,26 @@ show_date_screen.addEventListener("click", () => {
   }
 });
 
+// async function mainFuction() {
+//   var p = new Promise(function (resolve, reject) {
+//     chrome.storage.local.get(["scrappedRows"], function (options) {
+//       console.log(options.scrappedRows);
+//       resolve(options.scrappedRows);
+//     });
+//   });
+
+//   const configOut = await p;
+//   console.log("on line 90");
+//   let table = tableMaker(configOut);
+//   container.appendChild(table);
+//   totalRows.innerText = `Total rows : ${table.rows.length - 1}`;
+//   localStorage.setItem("rowdisplay", true);
+//   rowScreenDisplay();
+//   chrome.runtime.onMessage.addListener((res, sender, sendRes) => {
+//     alert(res);
+//   });
+// }
+
 proceedBtn.addEventListener("click", () => {
   let rows = document.getElementById("rowsNumber").value;
   if (rows === " " || rows < 0 || rows === "") {
@@ -90,10 +111,11 @@ proceedBtn.addEventListener("click", () => {
   } else {
     localStorage.setItem("proceed", true);
     messagePassing("rows_data", rows);
-    chrome.storage.sync.get(["scrappedRows"], function (result) {
-      let table = tableMaker(result.scrappedRows);
+    chrome.runtime.onMessage.addListener((res) => {
+      localStorage.setItem("rowsRec", JSON.stringify(res));
+      let table = tableMaker(res);
       container.appendChild(table);
-      totalRows.innerText = `Total rows : ${table.rows.length}`;
+      totalRows.innerText = `Total rows : ${table.rows.length - 1}`;
       localStorage.setItem("rowdisplay", true);
       rowScreenDisplay();
     });

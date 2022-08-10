@@ -489,9 +489,10 @@ class GenericExtraction {
           NextButton.click();
         }
       }
-      chrome.storage.sync.set({ scrappedRows: rows }, function () {
-        console.log("anything");
-      });
+      // chrome.storage.local.set({ scrappedRows: rows }, () => {
+      //   console.table(rows);
+      // });
+      chrome.runtime.sendMessage(rows);
     } catch (error) {
       alert(error);
     }
