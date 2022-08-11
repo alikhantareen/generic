@@ -1,9 +1,16 @@
 //showing options screen after setting chrome.sync.storage in content.js
 chrome.storage.local.get(["startSet"], function (result) {
-  console.log(result.startSet);
-  if (result.startSet) {
+  if (result.startSet && localStorage.getItem("proceed")) {
+    if (document.getElementById("rowContainer").childElementCount >= 1) {
+    } else {
+      let table = tableMaker(JSON.parse(localStorage.getItem("rowsRec")));
+      document.getElementById("rowContainer").appendChild(table);
+      rowScreenDisplay();
+    }
+  } else if (result.startSet) {
     localStorage.setItem("startClicked", true);
     showOptionsScreen();
+  } else {
   }
 });
 
@@ -14,13 +21,16 @@ if (
   localStorage.getItem("proceed")
 ) {
   try {
-    let table = tableMaker(JSON.parse(localStorage.getItem("rowsRec")));
-    document.getElementById("rowContainer").appendChild(table);
-    document.getElementById("totalRows").innerText = `Total rows : ${
-      table.rows.length - 1
-    }`;
-    localStorage.setItem("rowdisplay", true);
-    rowScreenDisplay();
+    if (document.getElementById("rowContainer").childElementCount >= 1) {
+    } else {
+      let table = tableMaker(JSON.parse(localStorage.getItem("rowsRec")));
+      document.getElementById("rowContainer").appendChild(table);
+      document.getElementById("totalRows").innerText = `Total rows : ${
+        table.rows.length - 1
+      }`;
+      localStorage.setItem("rowdisplay", true);
+      rowScreenDisplay();
+    }
   } catch (error) {
     alert(error);
   }
@@ -57,9 +67,16 @@ const errorInput = document.getElementById("errorInput");
 allDatabtn.style.display = "none";
 show_date_screen.style.display = "none";
 
+function removeAllChildNodes(parent) {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
+  }
+}
+
 //below are the listeners on different elements
 back.addEventListener("click", () => {
-  container.removeChild(container.childNodes[container.childNodes.length - 1]);
+  // container.removeChild(container.childNodes[container.childNodes.length - 1]);
+  removeAllChildNodes(container);
   localStorage.removeItem("proceed");
   localStorage.removeItem("rowsRec");
   showOptionsScreen();
