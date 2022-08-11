@@ -1,3 +1,12 @@
+//showing options screen after setting chrome.sync.storage in content.js
+chrome.storage.local.get(["startSet"], function (result) {
+  console.log(result.startSet);
+  if (result.startSet) {
+    localStorage.setItem("startClicked", true);
+    showOptionsScreen();
+  }
+});
+
 //Conditions on which different screens will be displayed
 if (
   localStorage.getItem("user") &&
@@ -65,7 +74,6 @@ clearLsbtn.addEventListener("click", () => {
 });
 
 startbtn.addEventListener("click", () => {
-  localStorage.setItem("startClicked", true);
   messagePassing("runScript");
 });
 
@@ -84,26 +92,6 @@ show_date_screen.addEventListener("click", () => {
   }
 });
 
-// async function mainFuction() {
-//   var p = new Promise(function (resolve, reject) {
-//     chrome.storage.local.get(["scrappedRows"], function (options) {
-//       console.log(options.scrappedRows);
-//       resolve(options.scrappedRows);
-//     });
-//   });
-
-//   const configOut = await p;
-//   console.log("on line 90");
-//   let table = tableMaker(configOut);
-//   container.appendChild(table);
-//   totalRows.innerText = `Total rows : ${table.rows.length - 1}`;
-//   localStorage.setItem("rowdisplay", true);
-//   rowScreenDisplay();
-//   chrome.runtime.onMessage.addListener((res, sender, sendRes) => {
-//     alert(res);
-//   });
-// }
-
 proceedBtn.addEventListener("click", () => {
   let rows = document.getElementById("rowsNumber").value;
   if (rows === " " || rows < 0 || rows === "") {
@@ -111,13 +99,15 @@ proceedBtn.addEventListener("click", () => {
   } else {
     localStorage.setItem("proceed", true);
     messagePassing("rows_data", rows);
-    chrome.runtime.onMessage.addListener((res) => {
-      localStorage.setItem("rowsRec", JSON.stringify(res));
-      let table = tableMaker(res);
-      container.appendChild(table);
-      totalRows.innerText = `Total rows : ${table.rows.length - 1}`;
-      localStorage.setItem("rowdisplay", true);
-      rowScreenDisplay();
+    chrome.runtime.onMessage.addListener((req) => {
+      if (req.type === "rows") {
+        localStorage.setItem("rowsRec", JSON.stringify(req.data));
+        let table = tableMaker(req.data);
+        container.appendChild(table);
+        totalRows.innerText = `Total rows : ${table.rows.length - 1}`;
+        localStorage.setItem("rowdisplay", true);
+        rowScreenDisplay();
+      }
     });
   }
 });

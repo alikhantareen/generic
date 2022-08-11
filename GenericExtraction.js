@@ -33,6 +33,9 @@ class GenericExtraction {
 
   async userSelection() {
     try {
+      for (var x = document.links.length - 1; x >= 0; x--) {
+        document.links[x].removeAttribute("href");
+      }
       const exist = await this.waitForElm("table");
       let vars = this.table_manipulate("table");
       let table = vars.table;
@@ -177,6 +180,9 @@ class GenericExtraction {
                             );
                         }
                       }
+                      chrome.storage.local.set({"startSet": true}, function() {
+                        console.log('Value is set to ' + true);
+                      });
                       this.alertUser();
                     }
                   } else {
@@ -492,7 +498,7 @@ class GenericExtraction {
       // chrome.storage.local.set({ scrappedRows: rows }, () => {
       //   console.table(rows);
       // });
-      chrome.runtime.sendMessage(rows);
+      chrome.runtime.sendMessage({ type: "rows", data: rows });
     } catch (error) {
       alert(error);
     }
