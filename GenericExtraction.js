@@ -31,11 +31,32 @@ class GenericExtraction {
     alert("Data has been uploaded.");
   }
 
+  disablingClick() {
+    let arr = [];
+    document.querySelectorAll("*").forEach((node) => {
+      if (node.tagName === "TR" || node.className === "ant-pagination") {
+        arr.push(node);
+      } else {
+        node.style.pointerEvents = "none";
+      }
+    });
+
+    arr.forEach((n) => {
+      n.querySelectorAll("*").forEach((e) => {
+        e.style.pointerEvents = "auto";
+      });
+    });
+  }
+
+  enablingClicks() {
+    document.querySelectorAll("*").forEach((node) => {
+      node.style.pointerEvents = "auto";
+    });
+  }
+
   async userSelection() {
     try {
-      for (var x = document.links.length - 1; x >= 0; x--) {
-        document.links[x].removeAttribute("href");
-      }
+      this.disablingClick();
       const exist = await this.waitForElm("table");
       let vars = this.table_manipulate("table");
       let table = vars.table;
@@ -180,9 +201,10 @@ class GenericExtraction {
                             );
                         }
                       }
-                      chrome.storage.local.set({"startSet": true}, function() {
-                        console.log('Value is set to ' + true);
+                      chrome.storage.local.set({ startSet: true }, function () {
+                        console.log("Value is set to " + true);
                       });
+                      this.enablingClicks();
                       this.alertUser();
                     }
                   } else {
@@ -197,7 +219,7 @@ class GenericExtraction {
         alert("Table not found");
       }
     } catch (error) {
-      alert(error);
+      alert(error + "on line 202");
     }
   }
 
@@ -500,7 +522,7 @@ class GenericExtraction {
       // });
       chrome.runtime.sendMessage({ type: "rows", data: rows });
     } catch (error) {
-      alert(error);
+      alert(error + "on line 505");
     }
   }
 
