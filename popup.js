@@ -32,7 +32,7 @@ if (
       rowScreenDisplay();
     }
   } catch (error) {
-    alert(error);
+    alert(error + "here");
   }
 } else if (
   localStorage.getItem("user") &&
@@ -194,6 +194,7 @@ up.addEventListener("click", () => {
 
 //this function will be used to display table
 function tableMaker(rowsData) {
+  console.log(rowsData);
   let table = document.createElement("table");
   table.setAttribute("id", "generic_data_extraction");
   let thead = document.createElement("thead");

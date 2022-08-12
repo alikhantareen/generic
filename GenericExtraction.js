@@ -33,6 +33,7 @@ class GenericExtraction {
 
   disablingClick() {
     let arr = [];
+    let links = document.links;
     document.querySelectorAll("*").forEach((node) => {
       if (node.tagName === "TR" || node.className === "ant-pagination") {
         arr.push(node);
@@ -46,6 +47,32 @@ class GenericExtraction {
         e.style.pointerEvents = "auto";
       });
     });
+
+    let ul = arr[arr.length - 1];
+    ul.querySelectorAll("*").forEach((el) => {
+      if (el.tagName === "A" || el.tagName === "LI") {
+        if (el.innerText === "1") {
+          el.style.pointerEvents = "auto";
+        } else {
+          el.style.pointerEvents = "none";
+        }
+      }
+    });
+
+    if (window.location.href === "https://platform.autods.com/orders") {
+      let c = document.getElementsByClassName("ellipsis");
+      let icn = document.getElementsByClassName("site-icn");
+
+      for (let i = 0; i < c.length; i++) {
+        c[i].style.pointerEvents = "none";
+      }
+      for (let i = 0; i < icn.length; i++) {
+        icn[i].style.pointerEvents = "none";
+      }
+    }
+    for (let i = 0; i < links.length; i++) {
+      links[i].style.pointerEvents = "none";
+    }
   }
 
   enablingClicks() {
@@ -219,7 +246,7 @@ class GenericExtraction {
         alert("Table not found");
       }
     } catch (error) {
-      alert(error + "on line 202");
+      alert(error + "selection");
     }
   }
 
@@ -522,7 +549,7 @@ class GenericExtraction {
       // });
       chrome.runtime.sendMessage({ type: "rows", data: rows });
     } catch (error) {
-      alert(error + "on line 505");
+      alert(error + "fetch rows data");
     }
   }
 
