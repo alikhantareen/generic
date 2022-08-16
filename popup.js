@@ -75,7 +75,6 @@ function removeAllChildNodes(parent) {
 
 //below are the listeners on different elements
 back.addEventListener("click", () => {
-  // container.removeChild(container.childNodes[container.childNodes.length - 1]);
   removeAllChildNodes(container);
   localStorage.removeItem("proceed");
   localStorage.removeItem("rowsRec");
@@ -95,6 +94,10 @@ startbtn.addEventListener("click", () => {
 });
 
 show_rows_screen.addEventListener("click", () => {
+  if (errorInput.innerText === "Invalid input") {
+    errorInput.innerText = "";
+  }
+
   showRowsScreen();
 });
 
@@ -110,8 +113,9 @@ show_date_screen.addEventListener("click", () => {
 });
 
 proceedBtn.addEventListener("click", () => {
+  document.getElementById("rowContainer").innerHTML = " ";
   let rows = document.getElementById("rowsNumber").value;
-  if (rows === " " || rows < 0 || rows === "") {
+  if (rows === " " || rows < 0 || rows === "" || rows === "0") {
     errorInput.innerText = "Invalid input!";
   } else {
     localStorage.setItem("proceed", true);
@@ -123,6 +127,11 @@ proceedBtn.addEventListener("click", () => {
         container.appendChild(table);
         totalRows.innerText = `Total rows : ${table.rows.length - 1}`;
         localStorage.setItem("rowdisplay", true);
+        if (container.childElementCount > 1) {
+          container.removeChild(
+            container.childNodes[container.childNodes.length - 1]
+          );
+        }
         rowScreenDisplay();
       }
     });
@@ -194,7 +203,6 @@ up.addEventListener("click", () => {
 
 //this function will be used to display table
 function tableMaker(rowsData) {
-  console.log(rowsData);
   let table = document.createElement("table");
   table.setAttribute("id", "generic_data_extraction");
   let thead = document.createElement("thead");

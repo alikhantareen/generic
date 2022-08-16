@@ -35,7 +35,11 @@ class GenericExtraction {
     let arr = [];
     let links = document.links;
     document.querySelectorAll("*").forEach((node) => {
-      if (node.tagName === "TR" || node.className === "ant-pagination") {
+      if (
+        node.tagName === "TR" ||
+        node.className === "ant-pagination" ||
+        node.className === "pagination"
+      ) {
         arr.push(node);
       } else {
         node.style.pointerEvents = "none";
@@ -49,10 +53,13 @@ class GenericExtraction {
     });
 
     let ul = arr[arr.length - 1];
+
     ul.querySelectorAll("*").forEach((el) => {
       if (el.tagName === "A" || el.tagName === "LI") {
         if (el.innerText === "1") {
-          el.style.pointerEvents = "auto";
+          el.querySelectorAll("*").forEach((elem) => {
+            elem.style.pointerEvents = "auto";
+          });
         } else {
           el.style.pointerEvents = "none";
         }
@@ -246,7 +253,7 @@ class GenericExtraction {
         alert("Table not found");
       }
     } catch (error) {
-      alert(error + "selection");
+      alert("Error: " + error.message);
     }
   }
 
@@ -544,12 +551,9 @@ class GenericExtraction {
           NextButton.click();
         }
       }
-      // chrome.storage.local.set({ scrappedRows: rows }, () => {
-      //   console.table(rows);
-      // });
       chrome.runtime.sendMessage({ type: "rows", data: rows });
     } catch (error) {
-      alert(error + "fetch rows data");
+      alert("Error: " + error.message);
     }
   }
 
