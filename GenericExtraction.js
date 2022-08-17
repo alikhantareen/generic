@@ -518,17 +518,14 @@ class GenericExtraction {
       let rows = [];
       let NextButton = "";
       for (let i = 0; i < len.length; i++) {
+        debugger;
         const ex = await this.waitForElm("table");
         let table_manipulate_obj = this.table_manipulate("table");
         let table = table_manipulate_obj.table;
+        let x = this.getSpecificRowsTable(table, number_of_rows - rows.length);
+        rows = [...rows, ...x];
         if (rows.length === parseInt(number_of_rows)) {
           break;
-        } else {
-          let x = this.getSpecificRowsTable(
-            table,
-            number_of_rows - rows.length
-          );
-          rows = [...rows, ...x];
         }
         if (this.obj.flag) {
           NextButton = this.obj.autoDsNextButton;

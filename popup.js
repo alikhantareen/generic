@@ -48,7 +48,7 @@ if (
 }
 
 //constants to be used
-const startbtn = document.getElementById("startButton");
+const startBtn = document.getElementById("startButton");
 const allDatabtn = document.getElementById("allData");
 const clearLsbtn = document.getElementById("clrlocal");
 const show_rows_screen = document.getElementById("rowsData");
@@ -89,7 +89,7 @@ clearLsbtn.addEventListener("click", () => {
   introScreen();
 });
 
-startbtn.addEventListener("click", () => {
+startBtn.addEventListener("click", () => {
   messagePassing("runScript");
 });
 
