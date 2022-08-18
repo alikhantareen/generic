@@ -14,6 +14,10 @@ chrome.storage.local.get(["startSet"], function (result) {
   }
 });
 
+// localStorage.removeItem("startClicked");
+// localStorage.removeItem("proceed");
+// localStorage.removeItem("rowsRec");
+
 //Conditions on which different screens will be displayed
 if (
   localStorage.getItem("user") &&
@@ -32,7 +36,10 @@ if (
       rowScreenDisplay();
     }
   } catch (error) {
-    alert(error + "here");
+    localStorage.removeItem("startClicked");
+    localStorage.removeItem("proceed");
+    localStorage.removeItem("rowsRec");
+    alert(error);
   }
 } else if (
   localStorage.getItem("user") &&
@@ -184,6 +191,8 @@ down.addEventListener("click", () => {
     document.getElementById("down").style.background = "#2c963f";
     document.getElementById("down").innerText = "Downloading...";
     html_table_to_excel(newTable, "xlsx");
+    document.getElementById("down").innerText = "Download";
+    document.getElementById("down").style.background = "#1b5c27";
   } catch (error) {
     alert(error);
   }
@@ -197,12 +206,16 @@ up.addEventListener("click", () => {
     document.getElementById("upload").innerText = "Uploading...";
     postData(rows);
   } catch (error) {
-    alert(error);
+    localStorage.removeItem("startClicked");
+    localStorage.removeItem("proceed");
+    localStorage.removeItem("rowsRec");
+    alert(error + "at line 208");
   }
 });
 
 //this function will be used to display table
 function tableMaker(rowsData) {
+  console.log(rowsData);
   let table = document.createElement("table");
   table.setAttribute("id", "generic_data_extraction");
   let thead = document.createElement("thead");

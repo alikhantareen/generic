@@ -98,6 +98,7 @@ class GenericExtraction {
       let tableHeadings = document.querySelectorAll("table thead tr th");
       let tableCellsInnerText = [];
       let running_alert = true;
+      let parentDiv = "";
 
       // this loop is extracting the innerText from the table headings
       for (let i = 0; i < tableHeadings.length; i++) {
@@ -160,7 +161,12 @@ class GenericExtraction {
             alert(
               "Please select the pagination buttons element from the page!"
             );
-            let parentDiv = table.parentNode.parentNode.parentNode;
+            if(document.querySelector(".ant-pagination")) {
+              parentDiv = document.querySelector(".ant-pagination");
+            }
+            if(document.querySelector(".pagination")) {
+              parentDiv = document.querySelector(".pagination")
+            }
             setTimeout(() => {
               parentDiv.addEventListener("click", (e) => {
                 if (e.target.tagName === "A") {
@@ -253,7 +259,7 @@ class GenericExtraction {
         alert("Table not found");
       }
     } catch (error) {
-      alert("Error: " + error.message);
+      alert("OOPS! Unexpected error. Refresh the page and continue again." + error);
     }
   }
 
@@ -518,7 +524,6 @@ class GenericExtraction {
       let rows = [];
       let NextButton = "";
       for (let i = 0; i < len.length; i++) {
-        debugger;
         const ex = await this.waitForElm("table");
         let table_manipulate_obj = this.table_manipulate("table");
         let table = table_manipulate_obj.table;
@@ -550,7 +555,7 @@ class GenericExtraction {
       }
       chrome.runtime.sendMessage({ type: "rows", data: rows });
     } catch (error) {
-      alert("Error: " + error.message);
+      alert("OOPS! Unexpected error. Refresh the page and continue again." + error);
     }
   }
 
