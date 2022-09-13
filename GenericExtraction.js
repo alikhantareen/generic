@@ -16,7 +16,8 @@ class GenericExtraction {
       dynamicRows: [],
     };
   }
-  //these are the mothods that have been added and changed accordingly.
+
+  //these are the methods that have been added and changed accordingly.
   alertUser() {
     if (this.obj.alert) {
       alert(
@@ -46,24 +47,31 @@ class GenericExtraction {
       }
     });
 
+    for (let i = 0; i < links.length; i++) {
+      links[i].style.pointerEvents = "none";
+    }
+
+    arr.forEach((elem) => {
+      if (
+        elem.className === "pagination" ||
+        elem.className === "ant-pagination" ||
+        elem.className === "dataTables_paginate"
+      ) {
+        elem.querySelectorAll("*").forEach((el) => {
+          el.querySelectorAll("*").forEach((e) => {
+            if (e.innerText === "1") {
+              e.style.pointerEvents = "auto";
+            } else {
+            }
+          });
+        });
+      }
+    });
+
     arr.forEach((n) => {
       n.querySelectorAll("*").forEach((e) => {
         e.style.pointerEvents = "auto";
       });
-    });
-
-    let ul = arr[arr.length - 1];
-
-    ul.querySelectorAll("*").forEach((el) => {
-      if (el.tagName === "A" || el.tagName === "LI") {
-        if (el.innerText === "1") {
-          el.querySelectorAll("*").forEach((elem) => {
-            elem.style.pointerEvents = "auto";
-          });
-        } else {
-          el.style.pointerEvents = "none";
-        }
-      }
     });
 
     if (window.location.href === "https://platform.autods.com/orders") {
@@ -76,9 +84,6 @@ class GenericExtraction {
       for (let i = 0; i < icn.length; i++) {
         icn[i].style.pointerEvents = "none";
       }
-    }
-    for (let i = 0; i < links.length; i++) {
-      links[i].style.pointerEvents = "none";
     }
   }
 
@@ -98,7 +103,8 @@ class GenericExtraction {
       let tableHeadings = document.querySelectorAll("table thead tr th");
       let tableCellsInnerText = [];
       let running_alert = true;
-      let parentDiv = "";
+      let windowClickedElems = [];
+      let winClickLastElem = "";
 
       // this loop is extracting the innerText from the table headings
       for (let i = 0; i < tableHeadings.length; i++) {
@@ -123,8 +129,8 @@ class GenericExtraction {
           alert(
             "Selection process has been done. Please choose the options from the popup OR clear selections to start from scratch"
           );
-          this.obj.paginationButtons = document.querySelectorAll(
-            "." + localStorage.getItem("nextButtonClassName")
+          this.obj.paginationButtons = document.querdySelectorAll(
+            localStorage.getItem("nextButtonClassName")
           );
           table.rows[1].style.backgroundColor = "white";
           table.rows[1].cells[
@@ -146,9 +152,6 @@ class GenericExtraction {
           );
         }
         table.rows[1].addEventListener("click", (e) => {
-          if (this.obj.user_selections.length === 2) {
-            table.rows[1].style.backgroundColor = "white";
-          }
           if (localStorage.getItem("cells_selected")) {
           } else {
             if (this.obj.user_selections.length < 3) {
@@ -158,120 +161,103 @@ class GenericExtraction {
             this.obj.user_selections.push(e.target);
           }
           if (this.obj.user_selections.length === 2) {
+            table.rows[1].style.backgroundColor = "white";
+            this.enablingClicks();
             alert(
               "Please select the pagination buttons element from the page!"
             );
-            if(document.querySelector(".ant-pagination")) {
-              parentDiv = document.querySelector(".ant-pagination");
-            }
-            if(document.querySelector(".pagination")) {
-              parentDiv = document.querySelector(".pagination")
-            }
-            setTimeout(() => {
-              parentDiv.addEventListener("click", (e) => {
-                if (e.target.tagName === "A") {
-                  if (
-                    e.target.innerText >= parseInt("1") ||
-                    e.target.innerText <= parseInt("1000000") ||
-                    e.target.innerText === "Next" ||
-                    e.target.innerText === "Previous" ||
-                    e.target.innerText === ">" ||
-                    e.target.innerText === "<" ||
-                    e.target.innerText === "First" ||
-                    e.target.innerText === "Last" ||
-                    e.target.innerText === "←" ||
-                    e.target.innerText === "→"
-                  ) {
-                    this.obj.user_selections.push(e.target);
-                    if (this.obj.user_selections.length === 3) {
-                      localStorage.setItem("cells_selected", true);
-                      if (
-                        window.location.href ===
-                        "https://platform.autods.com/orders"
-                      ) {
-                        let class_name = this.strTrimmer(
-                          this.obj.user_selections[
-                            this.obj.user_selections.length - 1
-                          ].parentNode.className
-                        );
-                        let t = document.querySelectorAll("." + class_name);
-                        for (let i = 0; i < t[t.length - 1].innerText; i++) {
-                          this.obj.paginationButtonsLength.push(i);
-                        }
-                        classNameToCapture = document.querySelector(
-                          "." + class_name
-                        ).parentNode.className;
-                        let c =
-                          document.querySelector(".ant-pagination").childNodes;
-                        this.obj.autoDsNextButton = c[c.length - 1];
-                        this.obj.flag = true;
-                      } else {
-                        if (
-                          localStorage.getItem("nextButtonClassName") === null
-                        ) {
-                          if (
-                            !this.obj.user_selections[
-                              this.obj.user_selections.length - 1
-                            ].className
-                          ) {
-                            classNameToCapture = this.strTrimmer(
-                              this.obj.user_selections[
-                                this.obj.user_selections.length - 1
-                              ].parentNode.className
-                            );
-                          } else {
-                            classNameToCapture = this.strTrimmer(
-                              this.obj.user_selections[
-                                this.obj.user_selections.length - 1
-                              ].className
-                            );
-                          }
-                          localStorage.setItem(
-                            "nextButtonClassName",
-                            classNameToCapture
-                          );
-                          this.obj.paginationButtons =
-                            document.querySelectorAll(
-                              "." + localStorage.getItem("nextButtonClassName")
-                            );
-                        } else {
-                          this.obj.paginationButtons =
-                            document.querySelectorAll(
-                              "." + localStorage.getItem("nextButtonClassName")
-                            );
-                        }
-                      }
-                      chrome.storage.local.set({ startSet: true }, function () {
-                        console.log("Value is set to " + true);
-                      });
-                      this.enablingClicks();
-                      this.alertUser();
-                    }
-                  } else {
-                    alert("Please select the proper pagination element");
-                  }
-                }
-              });
-            }, 1000);
+            window.addEventListener(
+              "click",
+              this.respond(windowClickedElems, winClickLastElem),
+              true
+            );
           }
         });
       } else {
         alert("Table not found");
       }
     } catch (error) {
-      alert("OOPS! Unexpected error. Refresh the page and continue again." + error);
+      alert(
+        "OOPS! Unexpected error. Refresh the page and continue again. " + error
+      );
     }
+  }
+
+  respond(par1, par2) {
+    return (elem) => {
+      if (!localStorage.getItem("capturedBtn")) {
+        elem.stopPropagation();
+        elem.stopImmediatePropagation();
+        elem.preventDefault();
+      }
+      let windowClickedElems = par1;
+      let winClickLastElem = par2;
+      windowClickedElems.push(elem.target);
+      winClickLastElem = windowClickedElems[windowClickedElems.length - 1];
+      if (windowClickedElems.length === 1) {
+        while (true) {
+          if (
+            winClickLastElem.innerText === undefined ||
+            winClickLastElem.innerText === null
+          ) {
+            winClickLastElem = winClickLastElem.parentNode;
+          } else {
+            break;
+          }
+        }
+        let btnClass = unique(winClickLastElem);
+        let btn = document.querySelector(btnClass);
+        while (true) {
+          if (btn.innerText === undefined) {
+            btn = btn.parentNode;
+          } else {
+            break;
+          }
+        }
+        if (
+          btn.innerText === "Next" ||
+          btn.innerText === "Previous" ||
+          btn.innerText === ">" ||
+          btn.innerText === "<" ||
+          btn.innerText === "First" ||
+          btn.innerText === "Last" ||
+          btn.innerText === "←" ||
+          btn.innerText === "→" ||
+          btn.innerText === ""
+        ) {
+          if (localStorage.getItem("nextButtonClassName")) {
+            this.obj.paginationButtons = document.querySelectorAll(
+              localStorage.getItem("nextButtonClassName")
+            );
+          } else {
+            localStorage.setItem("nextButtonClassName", btnClass);
+            this.obj.paginationButtons = document.querySelectorAll(
+              localStorage.getItem("nextButtonClassName")
+            );
+          }
+          chrome.storage.local.set({ startSet: true }, function () {
+            console.log("");
+          });
+          localStorage.setItem("capturedBtn", true);
+          this.alertUser();
+          window.removeEventListener("click", this.respond, true);
+        } else {
+          windowClickedElems.pop();
+          alert("Please select the proper pagination element");
+        }
+      }
+    };
   }
 
   waitForElm(selector) {
     return new Promise((resolve) => {
       if (document.querySelector(selector)) {
-        return resolve(document.querySelector(selector));
+        return resolve(true);
       }
 
       const observer = new MutationObserver((mutations) => {
         if (document.querySelector(selector)) {
-          resolve(document.querySelector(selector));
+          resolve(true);
           observer.disconnect();
         }
       });
@@ -293,17 +279,17 @@ class GenericExtraction {
     }
   }
 
-  strTrimmer(s) {
-    let newStr = [];
-    for (let i = 0; i < s.length; i++) {
-      if (s[i] !== " ") {
-        newStr.push(s[i]);
-      } else {
-        break;
-      }
-    }
-    return newStr.join("");
-  }
+  // strTrimmer(s) {
+  //   let newStr = [];
+  //   for (let i = 0; i < s.length; i++) {
+  //     if (s[i] !== " ") {
+  //       newStr.push(s[i]);
+  //     } else {
+  //       break;
+  //     }
+  //   }
+  //   return newStr.join("");
+  // }
 
   table_manipulate(selector) {
     let tableCellsLength = [];
@@ -412,7 +398,7 @@ class GenericExtraction {
         NextButton = this.obj.autoDsNextButton;
       } else {
         this.obj.paginationButtons = document.querySelectorAll(
-          "." + localStorage.getItem("nextButtonClassName")
+          localStorage.getItem("nextButtonClassName")
         );
         if (this.NextButtonCapture(this.obj.paginationButtons)) {
           NextButton = this.NextButtonCapture(this.obj.paginationButtons);
@@ -476,15 +462,15 @@ class GenericExtraction {
     return this.obj.paginationButtonsLength;
   }
 
-  NextButtonCapture(elements) {
-    for (let i = 0; i < elements.length; i++) {
-      if (elements[i].innerText === "Next" || elements[i].innerText === ">") {
-        return elements[i];
-      } else {
-        continue;
-      }
-    }
-  }
+  // NextButtonCapture(elements) {
+  //   for (let i = 0; i < elements.length; i++) {
+  //     if (elements[i].innerText === "Next" || elements[i].innerText === ">") {
+  //       return elements[i];
+  //     } else {
+  //       continue;
+  //     }
+  //   }
+  // }
 
   rowsReturn(table) {
     let returned_index = "";
@@ -503,11 +489,21 @@ class GenericExtraction {
       column1 =
         table.rows[i].cells[localStorage.getItem(this.CELL_ONE_KEY)].innerText;
       if (i === 0) {
-        table.rows[i].cells[localStorage.getItem(this.CELL_TWO_KEY)].innerText;
+        column2 =
+          table.rows[i].cells[localStorage.getItem(this.CELL_TWO_KEY)]
+            .innerText;
       } else {
-        column2 = table.rows[i].cells[localStorage.getItem(this.CELL_TWO_KEY)]
-          .querySelector("a")
-          .getAttribute("href");
+        if (
+          table.rows[i].cells[localStorage.getItem(this.CELL_TWO_KEY)]
+            .querySelector("a")
+            .getAttribute("href")
+        ) {
+          column2 = table.rows[i].cells[localStorage.getItem(this.CELL_TWO_KEY)]
+            .querySelector("a")
+            .getAttribute("href");
+        } else {
+          column2 = "No link found";
+        }
       }
 
       /* add a new records in the array */
@@ -520,10 +516,10 @@ class GenericExtraction {
   }
   async fetchRowsData(number_of_rows) {
     try {
-      let len = this.getting_buttons_length(this.obj.paginationButtons);
+      // let len = this.getting_buttons_length(this.obj.paginationButtons);
       let rows = [];
       let NextButton = "";
-      for (let i = 0; i < len.length; i++) {
+      while (true) {
         const ex = await this.waitForElm("table");
         let table_manipulate_obj = this.table_manipulate("table");
         let table = table_manipulate_obj.table;
@@ -532,19 +528,21 @@ class GenericExtraction {
         if (rows.length === parseInt(number_of_rows)) {
           break;
         }
-        if (this.obj.flag) {
-          NextButton = this.obj.autoDsNextButton;
-        } else {
-          this.obj.paginationButtons = document.querySelectorAll(
-            "." + localStorage.getItem("nextButtonClassName")
-          );
-          if (this.NextButtonCapture(this.obj.paginationButtons)) {
-            NextButton = this.NextButtonCapture(this.obj.paginationButtons);
-          } else {
-            NextButton =
-              this.obj.paginationButtons[this.obj.paginationButtons.length - 1];
-          }
-        }
+        NextButton =
+          this.obj.paginationButtons[this.obj.paginationButtons.length - 1];
+        // if (this.obj.flag) {
+        //   NextButton = this.obj.autoDsNextButton;
+        // } else {
+        //   this.obj.paginationButtons = document.querySelectorAll(
+        //     localStorage.getItem("nextButtonClassName")
+        //   );
+        //   if (this.NextButtonCapture(this.obj.paginationButtons)) {
+        //     NextButton = this.NextButtonCapture(this.obj.paginationButtons);
+        //   } else {
+        //     NextButton =
+        //       this.obj.paginationButtons[this.obj.paginationButtons.length - 1];
+        //   }
+        // }
         if (
           NextButton.classList[NextButton.classList.length - 1] === "disabled"
         ) {
@@ -555,7 +553,9 @@ class GenericExtraction {
       }
       chrome.runtime.sendMessage({ type: "rows", data: rows });
     } catch (error) {
-      alert("OOPS! Unexpected error. Refresh the page and continue again." + error);
+      alert(
+        "OOPS! Unexpected error. Refresh the page and continue again. " + error
+      );
     }
   }
 
@@ -647,13 +647,13 @@ class GenericExtraction {
       let table_manipulate_obj = this.table_manipulate("table");
       let table = table_manipulate_obj.table;
       this.obj.paginationButtons = document.querySelectorAll(
-        "." + localStorage.getItem("nextButtonClassName")
+        localStorage.getItem("nextButtonClassName")
       );
       if (this.obj.flag) {
         NextButton = this.obj.autoDsNextButton;
       } else {
         this.obj.paginationButtons = document.querySelectorAll(
-          "." + localStorage.getItem("nextButtonClassName")
+          localStorage.getItem("nextButtonClassName")
         );
         if (this.NextButtonCapture(this.obj.paginationButtons)) {
           NextButton = this.NextButtonCapture(this.obj.paginationButtons);

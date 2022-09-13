@@ -14,10 +14,6 @@ chrome.storage.local.get(["startSet"], function (result) {
   }
 });
 
-// localStorage.removeItem("startClicked");
-// localStorage.removeItem("proceed");
-// localStorage.removeItem("rowsRec");
-
 //Conditions on which different screens will be displayed
 if (
   localStorage.getItem("user") &&
@@ -213,7 +209,7 @@ up.addEventListener("click", () => {
   }
 });
 
-//this function will be used to display table
+//this function will be used to make a table
 function tableMaker(rowsData) {
   console.log(rowsData);
   let table = document.createElement("table");

@@ -1,0 +1,202 @@
+1: AutoDS
+2: OMS
+3: CMS
+
+
+Pagination buttons hierarchy
+1: ul > li > a
+2: div > buttons
+3: div > a
+4: button > span
+5: button
+
+All combinations above have diff classes and attributes.
+
+
+Second approach:
+If we let the user to select the pagination button's element and then capture it. 
+We can implement this approach thru window.onclick method
+Set the window.onclick method and let the user click
+When the user clicks, if the innerText of the selected element is 1 or > then it is our element
+Otherwise we will prompt the user to select again.
+
+Challenges in above approach:
+Validation
+Disabling the default behaviour of the button
+
+Flow to make:
+1: let user selects two columns
+2: implement window click
+3: alert the user to select pagination button
+4: implement event stop propagation in order to prevent the page from moving
+5: when the user clicks, valid the click by checking that if it changes our page
+6: save the class if it is our valid selector
+
+
+if clickElems === 2
+    click the next button
+    check for the changes in the element thru mutation observer
+    if changes === true
+        ok
+    else
+        remove the last elem from the array
+        alert to select again
+
+implement window click
+implement event stop propagation
+implement a boolean to check the event propagation
+get the element
+validate it thru basic validation
+add an empty string in the checking list too
+valid and got the button
+    click it if no event occurs move one level up
+    repeat the same till level three reaches
+
+    try {
+                  while (true) {
+                    if (btn.tagName !== "A") {
+                      btn = btn.parentNode;
+                    } else {
+                      break;
+                    }
+                  }
+                  this.waitForElm("table").then((res) => {
+                    if (res) {
+                      console.log("Valid element");
+                    } else {
+                      console.log("Not a valid element");
+                    }
+                  });
+                } catch (error) {
+                  console.log(error);
+                  windowClickedElems.pop();
+                }
+
+// if (document.querySelector(".ant-pagination")) {
+            //   parentDiv = document.querySelector(".ant-pagination");
+            // }
+            // if (document.querySelector(".pagination")) {
+            //   parentDiv = document.querySelector(".pagination");
+            // }
+            // if (document.querySelector(".dataTables_paginate")) {
+            //   parentDiv = document.querySelector(".dataTables_paginate");
+            // }
+            // if (document.querySelector(".MuiButtonBase-root")) {
+            //   parentDiv = document.querySelector(".MuiButtonBase-root");
+            // }
+            // setTimeout(() => {
+            //   parentDiv.addEventListener("click", (e) => {
+            //     if (
+            //       e.target.innerText >= parseInt("1") ||
+            //       e.target.innerText <= parseInt("1000000") ||
+            //       e.target.innerText === "Next" ||
+            //       e.target.innerText === "Previous" ||
+            //       e.target.innerText === ">" ||
+            //       e.target.innerText === "<" ||
+            //       e.target.innerText === "First" ||
+            //       e.target.innerText === "Last" ||
+            //       e.target.innerText === "←" ||
+            //       e.target.innerText === "→"
+            //     ) {
+            //       this.obj.user_selections.push(e.target);
+            //       if (this.obj.user_selections.length === 3) {
+            //         localStorage.setItem("cells_selected", true);
+            //         if (
+            //           window.location.href ===
+            //           "https://platform.autods.com/orders"
+            //         ) {
+            //           let class_name = this.strTrimmer(
+            //             this.obj.user_selections[
+            //               this.obj.user_selections.length - 1
+            //             ].parentNode.className
+            //           );
+            //           let t = document.querySelectorAll("." + class_name);
+            //           for (let i = 0; i < t[t.length - 1].innerText; i++) {
+            //             this.obj.paginationButtonsLength.push(i);
+            //           }
+            //           classNameToCapture = document.querySelector(
+            //             "." + class_name
+            //           ).parentNode.className;
+            //           let c =
+            //             document.querySelector(".ant-pagination").childNodes;
+            //           this.obj.autoDsNextButton = c[c.length - 1];
+            //           this.obj.flag = true;
+            //         } else {
+            //           if (
+            //             localStorage.getItem("nextButtonClassName") === null
+            //           ) {
+            //             if (
+            //               !this.obj.user_selections[
+            //                 this.obj.user_selections.length - 1
+            //               ].className
+            //             ) {
+            //               classNameToCapture = this.strTrimmer(
+            //                 this.obj.user_selections[
+            //                   this.obj.user_selections.length - 1
+            //                 ].parentNode.className
+            //               );
+            //             } else {
+            //               classNameToCapture = this.strTrimmer(
+            //                 this.obj.user_selections[
+            //                   this.obj.user_selections.length - 1
+            //                 ].className
+            //               );
+            //             }
+            //             localStorage.setItem(
+            //               "nextButtonClassName",
+            //               classNameToCapture
+            //             );
+            //             this.obj.paginationButtons = document.querySelectorAll(
+            //               "." + localStorage.getItem("nextButtonClassName")
+            //             );
+            //           } else {
+            //             this.obj.paginationButtons = document.querySelectorAll(
+            //               "." + localStorage.getItem("nextButtonClassName")
+            //             );
+            //           }
+            //         }
+            //         chrome.storage.local.set({ startSet: true }, function () {
+            //           console.log("Value is set to " + true);
+            //         });
+            //         // this.enablingClicks();
+            //         this.alertUser();
+            //       }
+            //     } else {
+            //       alert("Please select the proper pagination element");
+            //     }
+            //   });
+            // }, 1000);
+
+
+              watchChanges() {
+    // Create your observer
+    const observer = new MutationObserver(function (mutationList) {
+      // Your handling code here
+      for (const mutation of mutationList) {
+        if (
+          mutation.type === "childList" ||
+          mutation.type === "characterData" ||
+          mutation.type === "attributes"
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    });
+
+    // Select the element you want to watch
+    // const some = await this.waitForElm("table");
+    const elementNode = document.querySelectorAll("table")[1];
+
+    // Call the observe function by passing the node you want to watch with configuration options
+    observer.observe(elementNode, {
+      attributes: false,
+      childList: true,
+      subtree: false,
+      characterData: true,
+    });
+
+    // When ready to diconnect
+    observer.disconnect();
+  }

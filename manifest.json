@@ -8,7 +8,7 @@
   },
   "content_scripts": [
     {
-      "js": ["GenericExtraction.js", "content.js", "xlsx.full.min.js"],
+      "js": ["GenericExtraction.js", "content.js", "unique-selector.js" ,"xlsx.full.min.js"],
       "matches": ["<all_urls>"]
     }
   ],
