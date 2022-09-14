@@ -166,11 +166,7 @@ class GenericExtraction {
             alert(
               "Please select the pagination buttons element from the page!"
             );
-            window.addEventListener(
-              "click",
-              this.respond(windowClickedElems, winClickLastElem),
-              true
-            );
+            window.addEventListener("click", this.respond(), true);
           }
         });
       } else {
@@ -183,69 +179,34 @@ class GenericExtraction {
     }
   }
 
-  respond(par1, par2) {
+  respond() {
     return (elem) => {
       if (!localStorage.getItem("capturedBtn")) {
         elem.stopPropagation();
         elem.stopImmediatePropagation();
         elem.preventDefault();
       }
-      let windowClickedElems = par1;
-      let winClickLastElem = par2;
-      windowClickedElems.push(elem.target);
-      winClickLastElem = windowClickedElems[windowClickedElems.length - 1];
-      if (windowClickedElems.length === 1) {
-        while (true) {
-          if (
-            winClickLastElem.innerText === undefined ||
-            winClickLastElem.innerText === null
-          ) {
-            winClickLastElem = winClickLastElem.parentNode;
-          } else {
-            break;
-          }
-        }
-        let btnClass = unique(winClickLastElem);
-        let btn = document.querySelector(btnClass);
-        while (true) {
-          if (btn.innerText === undefined) {
-            btn = btn.parentNode;
-          } else {
-            break;
-          }
-        }
-        if (
-          btn.innerText === "Next" ||
-          btn.innerText === "Previous" ||
-          btn.innerText === ">" ||
-          btn.innerText === "<" ||
-          btn.innerText === "First" ||
-          btn.innerText === "Last" ||
-          btn.innerText === "←" ||
-          btn.innerText === "→" ||
-          btn.innerText === ""
-        ) {
-          if (localStorage.getItem("nextButtonClassName")) {
-            this.obj.paginationButtons = document.querySelectorAll(
-              localStorage.getItem("nextButtonClassName")
-            );
-          } else {
-            localStorage.setItem("nextButtonClassName", btnClass);
-            this.obj.paginationButtons = document.querySelectorAll(
-              localStorage.getItem("nextButtonClassName")
-            );
-          }
-          chrome.storage.local.set({ startSet: true }, function () {
-            console.log("");
-          });
-          localStorage.setItem("capturedBtn", true);
-          this.alertUser();
-          window.removeEventListener("click", this.respond, true);
-        } else {
-          windowClickedElems.pop();
-          alert("Please select the proper pagination element");
-        }
+
+      let btnClass = unique(elem.target);
+      if (localStorage.getItem("nextButtonClassName")) {
+        this.obj.paginationButtons = document.querySelectorAll(
+          localStorage.getItem("nextButtonClassName")
+        );
+      } else {
+        localStorage.setItem("nextButtonClassName", btnClass);
+        this.obj.paginationButtons = document.querySelectorAll(
+          localStorage.getItem("nextButtonClassName")
+        );
       }
+      chrome.storage.local.set({ startSet: true }, function () {
+        console.log("");
+      });
+      localStorage.setItem("capturedBtn", true);
+      console.log(
+        this.obj.paginationButtons[this.obj.paginationButtons.length - 1]
+      );
+      this.alertUser();
+      window.removeEventListener("click", this.respond, true);
     };
   }
 
@@ -278,18 +239,6 @@ class GenericExtraction {
       }
     }
   }
-
-  // strTrimmer(s) {
-  //   let newStr = [];
-  //   for (let i = 0; i < s.length; i++) {
-  //     if (s[i] !== " ") {
-  //       newStr.push(s[i]);
-  //     } else {
-  //       break;
-  //     }
-  //   }
-  //   return newStr.join("");
-  // }
 
   table_manipulate(selector) {
     let tableCellsLength = [];
@@ -462,16 +411,6 @@ class GenericExtraction {
     return this.obj.paginationButtonsLength;
   }
 
-  // NextButtonCapture(elements) {
-  //   for (let i = 0; i < elements.length; i++) {
-  //     if (elements[i].innerText === "Next" || elements[i].innerText === ">") {
-  //       return elements[i];
-  //     } else {
-  //       continue;
-  //     }
-  //   }
-  // }
-
   rowsReturn(table) {
     let returned_index = "";
     let cellInnerText = "";
@@ -518,7 +457,16 @@ class GenericExtraction {
     try {
       // let len = this.getting_buttons_length(this.obj.paginationButtons);
       let rows = [];
-      let NextButton = "";
+      let NextButton =
+        this.obj.paginationButtons[this.obj.paginationButtons.length - 1];
+      while (true) {
+        if (NextButton.tagName === "A" || NextButton.tagName === "BUTTON") {
+          break;
+        } else {
+          NextButton = NextButton.parentNode;
+          console.log(NextButton);
+        }
+      }
       while (true) {
         const ex = await this.waitForElm("table");
         let table_manipulate_obj = this.table_manipulate("table");
@@ -528,21 +476,6 @@ class GenericExtraction {
         if (rows.length === parseInt(number_of_rows)) {
           break;
         }
-        NextButton =
-          this.obj.paginationButtons[this.obj.paginationButtons.length - 1];
-        // if (this.obj.flag) {
-        //   NextButton = this.obj.autoDsNextButton;
-        // } else {
-        //   this.obj.paginationButtons = document.querySelectorAll(
-        //     localStorage.getItem("nextButtonClassName")
-        //   );
-        //   if (this.NextButtonCapture(this.obj.paginationButtons)) {
-        //     NextButton = this.NextButtonCapture(this.obj.paginationButtons);
-        //   } else {
-        //     NextButton =
-        //       this.obj.paginationButtons[this.obj.paginationButtons.length - 1];
-        //   }
-        // }
         if (
           NextButton.classList[NextButton.classList.length - 1] === "disabled"
         ) {
@@ -574,14 +507,25 @@ class GenericExtraction {
     for (let i = 1; i < table.rows.length; i++) {
       let column1 = "";
       let column2 = "";
-      column1 =
-        table.rows[i].cells[localStorage.getItem(this.CELL_ONE_KEY)].innerText;
       if (i === 0) {
-        table.rows[i].cells[localStorage.getItem(this.CELL_TWO_KEY)].innerText;
       } else {
-        column2 = table.rows[i].cells[localStorage.getItem(this.CELL_TWO_KEY)]
-          .querySelector("a")
-          .getAttribute("href");
+        column1 =
+          table.rows[i].cells[localStorage.getItem(this.CELL_ONE_KEY)]
+            .innerText;
+        if (
+          table.rows[i].cells[
+            localStorage.getItem(this.CELL_TWO_KEY)
+          ].querySelector("a") === undefined ||
+          table.rows[i].cells[
+            localStorage.getItem(this.CELL_TWO_KEY)
+          ].querySelector("a") === null
+        ) {
+          column2 = "No link found";
+        } else {
+          column2 = table.rows[i].cells[localStorage.getItem(this.CELL_TWO_KEY)]
+            .querySelector("a")
+            .getAttribute("href");
+        }
       }
 
       /* add a new records in the array */
