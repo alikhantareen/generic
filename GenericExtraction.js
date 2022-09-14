@@ -202,9 +202,6 @@ class GenericExtraction {
         console.log("");
       });
       localStorage.setItem("capturedBtn", true);
-      console.log(
-        this.obj.paginationButtons[this.obj.paginationButtons.length - 1]
-      );
       this.alertUser();
       window.removeEventListener("click", this.respond, true);
     };
@@ -464,24 +461,31 @@ class GenericExtraction {
           break;
         } else {
           NextButton = NextButton.parentNode;
-          console.log(NextButton);
         }
       }
+      debugger;
       while (true) {
         const ex = await this.waitForElm("table");
-        let table_manipulate_obj = this.table_manipulate("table");
-        let table = table_manipulate_obj.table;
-        let x = this.getSpecificRowsTable(table, number_of_rows - rows.length);
-        rows = [...rows, ...x];
-        if (rows.length === parseInt(number_of_rows)) {
-          break;
-        }
-        if (
-          NextButton.classList[NextButton.classList.length - 1] === "disabled"
-        ) {
-          break;
+        if (ex) {
+          let table_manipulate_obj = this.table_manipulate("table");
+          let table = table_manipulate_obj.table;
+          let x = this.getSpecificRowsTable(
+            table,
+            number_of_rows - rows.length
+          );
+          rows = [...rows, ...x];
+          if (rows.length === parseInt(number_of_rows)) {
+            break;
+          }
+          if (
+            NextButton.classList[NextButton.classList.length - 1] === "disabled"
+          ) {
+            break;
+          } else {
+            NextButton.click();
+          }
         } else {
-          NextButton.click();
+          console.log("Something");
         }
       }
       chrome.runtime.sendMessage({ type: "rows", data: rows });
